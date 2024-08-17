@@ -1,0 +1,71 @@
+[gd_scene load_steps=8 format=3 uid="uid://curmw7tqb1ba5"]
+
+[ext_resource type="PackedScene" uid="uid://bfswgk7byrf2a" path="res://Scene/player/player.tscn" id="1_cs0d0"]
+[ext_resource type="Script" path="res://Scene/MainScene/script/main_scene.gd" id="1_hlrrc"]
+[ext_resource type="PackedScene" uid="uid://c0oj6pgihmori" path="res://Scene/Mob/mob.tscn" id="2_ucmsc"]
+[ext_resource type="PackedScene" uid="uid://dqqt6dhtc2kaj" path="res://Scene/HUD/hud.tscn" id="4_c820v"]
+[ext_resource type="AudioStream" uid="uid://j04qp706yebn" path="res://dodge_the_creeps_2d_assets/dodge_the_creeps_2d_assets/art/House In a Forest Loop.ogg" id="5_ti4o1"]
+[ext_resource type="AudioStream" uid="uid://rys3sygg404n" path="res://dodge_the_creeps_2d_assets/dodge_the_creeps_2d_assets/art/gameover.wav" id="6_ou1yu"]
+
+[sub_resource type="Curve2D" id="Curve2D_gbaot"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, -1, -5, 0, 0, 0, 0, 479, -1, 0, 0, 0, 0, 479, 719, 0, 0, 0, 0, -1, 715, 0, 0, 0, 0, -1, -5)
+}
+point_count = 5
+
+[node name="MainScene" type="Node2D"]
+script = ExtResource("1_hlrrc")
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="ColorRect" type="ColorRect" parent="Control"]
+modulate = Color(0.345098, 0.443137, 0.431373, 1)
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 11.975
+anchor_bottom = 17.95
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.87451, 0.752941, 0.615686, 1)
+metadata/_edit_use_anchors_ = true
+
+[node name="Player" parent="." instance=ExtResource("1_cs0d0")]
+
+[node name="Mob" parent="." instance=ExtResource("2_ucmsc")]
+position = Vector2(-284, -141)
+
+[node name="StartTimer" type="Timer" parent="."]
+wait_time = 2.0
+
+[node name="ScoreTimer" type="Timer" parent="."]
+
+[node name="MobTimer" type="Timer" parent="."]
+wait_time = 0.5
+
+[node name="StartPosition" type="Marker2D" parent="."]
+position = Vector2(233, 330)
+
+[node name="MobPath" type="Path2D" parent="."]
+curve = SubResource("Curve2D_gbaot")
+
+[node name="MobSpawnLocation" type="PathFollow2D" parent="MobPath"]
+position = Vector2(-1, -5)
+rotation = 0.00833314
+
+[node name="HUD" parent="." instance=ExtResource("4_c820v")]
+
+[node name="MainMusic" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("5_ti4o1")
+
+[node name="DeathSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("6_ou1yu")
+
+[connection signal="hit" from="Player" to="." method="game_over"]
+[connection signal="timeout" from="StartTimer" to="." method="_on_start_timer_timeout"]
+[connection signal="timeout" from="ScoreTimer" to="." method="_on_score_timer_timeout"]
+[connection signal="timeout" from="MobTimer" to="." method="_on_mob_timer_timeout"]
+[connection signal="start_game" from="HUD" to="." method="new_game"]
